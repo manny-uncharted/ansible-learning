@@ -6,6 +6,9 @@ This article covers an integral tools for systems engineers, devops engineers an
 - Installing Ansible
 - Configuring Inventory in Ansible
 - Demo: Ansible Inventory
+- What is yaml?
+- Ansible Playbook
+
 
 
 
@@ -90,7 +93,7 @@ The inventory file also determines the following parameters:
 
 For example we could have
 ```
-web ansible_host=server1.company.com ansible_connection=ssh ansible_user=root ansible_password=password ansible_port=22
+web ansible_host=server1.company.com ansible_connection=ssh ansible_user=root ansible_ssh_pass=password ansible_port=22
 db ansible_host=server2.company.com ansible_connection=winrm ansible_user=administrator ansible_password=password ansible_port=5986
 ```
 Note: Setting key based passwords in plaintext format is not ideal for security reasons. You should set up ssh-key based passwordless authentication for the servers.
@@ -112,14 +115,67 @@ Here we would work on creating an inventory file.
     ```
     and add the following, which is the address of a server in our infrastructure:
     ```
-    target1 ansible_host=<host address> ansible_ssh_pass=<ssh password>
+    # Sample Inventory File
+
+    # Web Servers
+    web_node1 ansible_host=web01.xyz.com ansible_connection=winrm ansible_user=administrator ansible_password=Win$Pass
+    web_node2 ansible_host=web02.xyz.com ansible_connection=winrm ansible_user=administrator ansible_password=Win$Pass
+    web_node3 ansible_host=web03.xyz.com ansible_connection=winrm ansible_user=administrator ansible_password=Win$Pass
+
+    # DB Servers
+    sql_db1 ansible_host=sql01.xyz.com ansible_connection=ssh ansible_user=root ansible_ssh_pass=Lin$Pass
+    sql_db2 ansible_host=sql02.xyz.com ansible_connection=ssh ansible_user=root ansible_ssh_pass=Lin$Pass
+
+    # Groups
+    [db_nodes]
+    sql_db1
+    sql_db2
+
+    [web_nodes]
+    web_node1
+    web_node2
+    web_node3
+
+    [boston_nodes]
+    sql_db1
+    web_node1
+
+    [dallas_nodes]
+    sql_db2
+    web_node2
+    web_node3
+
+    [us_nodes:children]
+    boston_nodes
+    dallas_nodes
     ```
     Results:
     ![](img/inventory.png)
 
-- Then let's test our connection to the server
+<!-- - Then let's test our connection to the server
     ```
     ansible target1 -m ping -i inventory.txt
     ```
     Results:
-    ![](img/ansible-ping.png)
+    ![](img/ansible-ping.png) -->
+
+## What is yaml?
+A yaml file is a human readable file that is used to store data, mostly configuration data. It works like a key value pair file. The key is the name of the data and the value is the data itself. Data can also be stored in a list or as an array. Yaml files can also contain dictionaries.
+Note: In writing yaml files you must have equal number of spaces.
+
+
+## Ansible Playbook
+Ansible Playbook is a yaml file that is used to run ansible commands on a target system. It is a collection of tasks that are executed in order, from executing vms on public cloud to installing software on a server and many other tasks.
+
+- A playbook file consists of a play and a series of tasks. 
+
+- A play is a collection of tasks that are executed in order.
+- A Task is an action to be performed on the target system.
+
+- A play in plaintext is a list of dictionaries with properties such name, hosts, tasks. 
+
+After creating your playbook you can run it by running the following command:
+```
+ansible-playbook playbook.yml
+```
+where playbook.yml is the name of the playbook file.
