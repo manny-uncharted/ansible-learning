@@ -195,13 +195,16 @@ Note: There are two ways of running ansible. The first is to run the command dir
     cd project-1
     ```
     and in project one create an inventory.txt file as shown below:
-    ```
-    # Sample Inventory File
-    target1 ansible_host=<target-ip-address> ansible_ssh_pass=<target-password>
-    target2 ansible_host=<target-ip-address> ansible_ssh_pass=<target-password>
-    ```
 
-    ansible has a default group called 'all' and every host in the inventory file is a member of this group.
+    ```
+        # Sample Inventory File
+        target1 ansible_host=<target-ip-address> ansible_ssh_pass=<target-password>
+        target2 ansible_host=<target-ip-address> ansible_ssh_pass=<target-password>
+        
+    ```
+    
+
+- Ansible has a default group called 'all' and every host in the inventory file is a member of this group.
     ```
     ansible all -m ping -i inventory.txt
     ```
