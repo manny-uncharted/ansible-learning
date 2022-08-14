@@ -8,6 +8,10 @@ This article covers an integral tools for systems engineers, devops engineers an
 - Demo: Ansible Inventory
 - What is yaml?
 - Ansible Playbook
+- Demo: Ansible Playbook
+    - Executing Ansible using the ansible command
+    - Executing Ansible using the ansible-playbook command
+-
 
 
 
@@ -152,12 +156,12 @@ Here we would work on creating an inventory file.
     Results:
     ![](img/inventory.png)
 
-<!-- - Then let's test our connection to the server
+- Then let's test our connection to the server
     ```
     ansible target1 -m ping -i inventory.txt
     ```
     Results:
-    ![](img/ansible-ping.png) -->
+    ![](img/ansible-ping.png)
 
 ## What is yaml?
 A yaml file is a human readable file that is used to store data, mostly configuration data. It works like a key value pair file. The key is the name of the data and the value is the data itself. Data can also be stored in a list or as an array. Yaml files can also contain dictionaries.
@@ -179,3 +183,99 @@ After creating your playbook you can run it by running the following command:
 ansible-playbook playbook.yml
 ```
 where playbook.yml is the name of the playbook file.
+
+## Demo: Ansible Playbook
+Here we would work on creating a playbook file.
+Note: There are two ways of running ansible. The first is to run the command directly using ansible and the second is to use the ansible-playbook command.
+
+### Executing ansible using the ansible command
+-Create a new directory called project-1 and cd into it.
+    ```
+    mkdir project-1
+    cd project-1
+    ```
+    and in project one create an inventory.txt file as shown below:
+    ```
+    # Sample Inventory File
+    target1 ansible_host=<target-ip-address> ansible_ssh_pass=<target-password>
+    target2 ansible_host=<target-ip-address> ansible_ssh_pass=<target-password>
+    ```
+
+    ansible has a default group called 'all' and every host in the inventory file is a member of this group.
+    ```
+    ansible all -m ping -i inventory.txt
+    ```
+    The format for running an ansible command is as follows:
+    ```
+    ansible [group/host] -m <module>-i <inventory>
+    ```
+    Results:
+    ![](img/ansible-all-command.png)
+
+### Executing ansible using the ansible-playbook command
+In this case we will use the ansible-playbook command to run the playbook. But before we run this command we need to create an ansible playbook file.
+
+- In the project 1 folder create a playbook file <playbook-pingtest.yaml>
+    ```
+    cat > playbook-pingtest.yaml
+    ```
+    and add the following, which is the address of a server in our infrastructure:
+    ```
+    - 
+        name: Test Connectivity to target servers
+        hosts: all
+        tasks:
+        - name: Ping Test
+            ping:
+    ```
+    Results:
+    ![](img/playbook-pingtest.png)
+
+- To execute the playbook we use the command
+    ```
+    ansible-playbook playbook-pingtest.yaml -i inventory.txt
+    ```
+    Results:
+    ![](img/ansible-playbook-pingtest.png)
+
+
+### Copying files to target hosts
+In this case we will use the ansible-playbook command to run the playbook that copies a file to the target host.
+- Create a sample file 
+    ```
+    cat > /tmp/test-file.txt
+    ```
+    and in the file just put a sample text
+    ```
+    This is just a sample test file using ansible playbook to copy files from the controller to target hosts.
+    ```
+    Results:
+    ![](img/test-file.png)
+
+- Then we create a playbook <playbook-copy-file.yaml> and enter the following code
+    ```
+    -
+        name: Copy file to target servers
+        hosts: all
+        tasks:
+            - name: Copy file
+            copy:
+                src: /tmp/test-file.txt
+                dest: /tmp/test-file.txt
+
+    ```
+    Note: The module used here is the copy module and which we specified the location of the file to be copied, which is the src property. And the destination to copy the file which is the dest property.
+
+    And then we run the playbook with the command below:
+    ```
+    ansible-playbook playbook-copy-file.yaml -i inventory.txt
+    ```
+    Results:
+    ![](img/ansible-playbook-copy-file.png)
+
+- Now if you check the target servers to search for the file we copied using the command
+    ```
+    cat /tmp/test-file.txt
+    ```
+    Results:
+    ![](img/test-file-copy.png)
