@@ -1,4 +1,4 @@
-This article covers an integral tools for systems engineers, devops engineers and cloud engineers on how to automate repetitive tasks through out an entire IT infrastructure.
+This article covers integral tools for systems engineers, DevOps engineers and cloud engineers on how to automate repetitive tasks throughout an entire IT infrastructure.
 
 ## Table of Contents
 - What is Ansible?
@@ -6,12 +6,18 @@ This article covers an integral tools for systems engineers, devops engineers an
 - Installing Ansible
 - Configuring Inventory in Ansible
 - Demo: Ansible Inventory
-- What is yaml?
+- What is YAML?
 - Ansible Playbook
 - Demo: Ansible Playbook
     - Executing Ansible using the ansible command
     - Executing Ansible using the ansible-playbook command
--
+- Ansible Modules
+    - command module
+    - script module
+    - service module
+    - Demo: Ansible Modules
+- Ansible Variables
+
 
 
 
@@ -32,17 +38,7 @@ For the purpose of this article, I would be using CentOS 7.0 on an AWS EC2 insta
     Results:
     ![](img/ssh.png)
 
-While trying to install ansible, you might get the following error like I did:
-```
-[centos@ip-172-31-89-195 ~]$ sudo yum install ansible
-Loaded plugins: fastestmirror
-Loading mirror speeds from cached hostfile
- * base: download.cf.centos.org
- * extras: download.cf.centos.org
- * updates: download.cf.centos.org        
-No package ansible available.
-```
-In that case what you should do is to install the following packages:
+While trying to install ansible, you might get the following error as I did: In that case, what you should do is to install the following packages:
 ```
 sudo yum install epel-release
 ```
@@ -67,11 +63,12 @@ As in the course of my research to fix the error that ansible is a part of the E
 Now Ansible is properly installed and we can then move on to the next step.
 
 ## Configuring Inventory in Ansible
-Ansible can work with 2 or more server in your infrastructure in order to work with these servers. Ansible must establish connectivity with them. This connectivity is established using ssh for linux and powershell remoting for windows. This particular feature is what makes ansible agentless (you don't need to install additional software on the target machines for it to be able to work with ansible).
+Ansible can work with 2 or more servers in your infrastructure to work with these servers. Ansible must establish connectivity with them. This connectivity is established using ssh for Linux and PowerShell remoting for windows. This particular feature is what makes ansible agentless (you don't need to install additional software on the target machines for it to be able to work with ansible).
 Information about these target systems is stored in an inventory file.
 If you don't create an inventory file, ansible will use the default inventory file that is located at /etc/ansible/hosts.
 
-- Taking a look at a sample inventory file:
+
+Take a look at a sample inventory file:
 ```
 server1.company.com
 server2.company.com
@@ -82,12 +79,12 @@ server4.company.com
 ```
 Note: We can have multiple groups in an inventory file.
 
-- Working with aliases on server names in inventory file:
+- Working with aliases on server names in inventory files:
 ```
 web ansible_host=server1.company.com
 db ansible_host=server2.company.com
 ```
-Note: We can have multiple aliases on server names in inventory file.
+Note: We can have multiple aliases on server names in the inventory file.
 
 The inventory file also determines the following parameters:
 - The connection type (ssh or winrm)
@@ -95,12 +92,12 @@ The inventory file also determines the following parameters:
 - The password to use for the connection
 - The port to use for the connection(22 for ssh and 5986 for winrm)
 
-For example we could have
+For example, we could have
 ```
 web ansible_host=server1.company.com ansible_connection=ssh ansible_user=root ansible_ssh_pass=password ansible_port=22
 db ansible_host=server2.company.com ansible_connection=winrm ansible_user=administrator ansible_password=password ansible_port=5986
 ```
-Note: Setting key based passwords in plaintext format is not ideal for security reasons. You should set up ssh-key based passwordless authentication for the servers.
+Note: Setting key-based passwords in plaintext format is not ideal for security reasons. You should set up ssh-key based passwordless authentication for the servers.
 
 ## Demo: Ansible Inventory
 Here we would work on creating an inventory file.
@@ -163,20 +160,20 @@ Here we would work on creating an inventory file.
     Results:
     ![](img/ansible-ping.png)
 
-## What is yaml?
-A yaml file is a human readable file that is used to store data, mostly configuration data. It works like a key value pair file. The key is the name of the data and the value is the data itself. Data can also be stored in a list or as an array. Yaml files can also contain dictionaries.
-Note: In writing yaml files you must have equal number of spaces.
+## What is YAML?
+A YAML file is a human-readable file that is used to store data, mostly configuration data. It works like a key-value pair file. The key is the name of the data and the value is the data itself. Data can also be stored in a list or as an array. Yaml files can also contain dictionaries.
+Note: In writing YAML files you must have an equal number of spaces.
 
 
 ## Ansible Playbook
-Ansible Playbook is a yaml file that is used to run ansible commands on a target system. It is a collection of tasks that are executed in order, from executing vms on public cloud to installing software on a server and many other tasks.
+Ansible Playbook is a YAML file that is used to run ansible commands on a target system. It is a collection of tasks that are executed in order, from executing VMS on the public cloud to installing software on a server and many other tasks.
 
 - A playbook file consists of a play and a series of tasks. 
 
 - A play is a collection of tasks that are executed in order.
 - A Task is an action to be performed on the target system.
 
-- A play in plaintext is a list of dictionaries with properties such name, hosts, tasks. 
+- A play in plaintext is a list of dictionaries with properties such as names, hosts, and tasks. 
 
 After creating your playbook you can run it by running the following command:
 ```
@@ -216,7 +213,7 @@ Note: There are two ways of running ansible. The first is to run the command dir
     ![](img/ansible-all-command.png)
 
 ### Executing ansible using the ansible-playbook command
-In this case we will use the ansible-playbook command to run the playbook. But before we run this command we need to create an ansible playbook file.
+In this case, we will use the ansible-playbook command to run the playbook. But before we run this command we need to create an ansible playbook file.
 
 - In the project 1 folder create a playbook file <playbook-pingtest.yaml>
     ```
@@ -243,7 +240,7 @@ In this case we will use the ansible-playbook command to run the playbook. But b
 
 
 ### Copying files to target hosts
-In this case we will use the ansible-playbook command to run the playbook that copies a file to the target host.
+In this case, we will use the ansible-playbook command to run the playbook that copies a file to the target host.
 - Create a sample file 
     ```
     cat > /tmp/test-file.txt
@@ -267,7 +264,7 @@ In this case we will use the ansible-playbook command to run the playbook that c
                 dest: /tmp/test-file.txt
 
     ```
-    Note: The module used here is the copy module and which we specified the location of the file to be copied, which is the src property. And the destination to copy the file which is the dest property.
+    Note: The module used here is the copy module and which we specified the location of the file to be copied, which is the src property. And the destination to copy the file which is the "dest" property.
 
     And then we run the playbook with the command below:
     ```
@@ -282,3 +279,65 @@ In this case we will use the ansible-playbook command to run the playbook that c
     ```
     Results:
     ![](img/test-file-copy.png)
+
+## Ansible Modules
+
+Ansible modules are used to perform actions on the target system. They are categorized into various groups based on their functionality.
+
+- System Modules: These are actions that are performed at the system level.
+- Command Modules: These are used to execute scripts or commands on a host.
+- File Modules: These are used to work on files on hosts.
+- Database Modules: These are used to work on databases such as MongoDB, MySQL, PostgreSQL, etc. They are used to add or remove databases or modify DB configuration.
+- Cloud Modules: This contains a vast collection of modules that are used to work with different cloud providers.
+- Windows Module: This is used to work with windows environments.
+- And many more.
+
+### The command module
+The command module is used to execute commands on a remote node.
+
+?????
+Would talk about the parameters in the command module.
+
+
+
+?????
+
+
+### The script module
+The script module executes a script located on the ansible controller machine after transferring it over to the target hosts.
+
+### The service module
+The service module is used to maintain services on nodes on the network, it is used to start, stop, restart, or check the status of a service on a remote node.
+
+
+
+### Demo: Ansible Modules
+The following example shows how to execute a script on a series of web server nodes and also how to start the httpd service on the web server nodes.
+
+```
+-
+    name: 'Execute a script on all web server nodes'
+    hosts: web_nodes
+    tasks:
+        -
+            name: 'Update entry into /etc/resolv.conf'
+            lineinfile:
+                path: /etc/resolv.conf
+                line: 'nameserver 10.1.250.10'
+        -
+            name: 'Create a new user'
+            user:
+                name: web_user
+                uid: 1040
+                group: developers
+        -
+            name: 'Execute a script on all web server nodes'
+            script: /tmp/install_script.sh
+        -
+            name: 'Start httpd services on all web server nodes'
+            service: 
+                name: httpd
+                state: started
+```
+
+## Ansible Variables
