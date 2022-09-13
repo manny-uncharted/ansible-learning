@@ -341,3 +341,24 @@ The following example shows how to execute a script on a series of web server no
 ```
 
 ## Ansible Variables
+A variable stores information that can vary with each host. Variable can be defined in the playbook file or in the inventory file or in a separate variable file.
+The variable is defined in the playbook file and is passed to the module as an argument.
+To use a variable in a module, you need to use the following syntax:
+
+```
+{{ var_name }}
+```
+
+
+## Ansible Conditionals
+Conditionals are used when you need to perform an operation on different server types that require the use of different commands to carry out the same task.
+
+
+## Loops
+
+
+
+
+## Ansible Roles
+The primary purpose of roles is to make ones work reusable, as it involves writing a set of tasks that would be done repetitively so that other can also be able to make use of these tasks.
+For example, if you have a web server that needs to be installed on all the nodes in your infrastructure, you can create a role that contains the tasks to install the web server on all the nodes.
